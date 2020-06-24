@@ -1,28 +1,33 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <router-view/>
+    <div class="beian">
+      <bai-an-hao/>
+    </div>
+
+    <main-tab-bar></main-tab-bar>
+
+
   </div>
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+  import MainTabBar from 'components/content/mainTabbar/MainTabBar'
+  import BaiAnHao from 'components/common/tabbar/BaiAnHao'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MainTabBar,
+    BaiAnHao
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import "assets/css/base.css";
+.beian{
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin-bottom: 50px;
 }
 </style>
