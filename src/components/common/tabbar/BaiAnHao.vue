@@ -1,5 +1,8 @@
 <template>
-  <a href="http://beian.miit.gov.cn" target="_block">闽ICP备20008119号</a>
+  <div class="beian">
+    <a href="http://beian.miit.gov.cn" target="_block">闽ICP备20008119号</a>
+  </div>
+
 </template>
 
 <script>

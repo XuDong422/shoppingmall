@@ -1,5 +1,5 @@
 <template>
-  <tab-bar>
+  <tab-bar class="tab-bar">
     <tar-bar-item path="/home" activeColor="deeppink">
       <template #item-itco><img src="~assets/img/tabbar/home.svg" alt=""></template>
       <template #item-itco-active><img src="~assets/img/tabbar/home_active.svg" alt=""></template>
@@ -38,5 +38,7 @@
 </script>
 
 <style scoped>
-
+.tab-bar{
+  z-index: 99;
+}
 </style>
