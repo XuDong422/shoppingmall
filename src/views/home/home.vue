@@ -8,6 +8,16 @@
       </template>
     </nav-bar>
 
+    <!--点击切换产品与下方的scroll里的是一样的-->
+    <tab-control
+      :titles="['流行','新款','推荐']"
+      @tabClick="tabClick"
+      class="tab-home-control"
+      v-show="istabFixed"
+      ref="tabControl1"
+    />
+
+
 
     <scroll
       class="content"
@@ -21,16 +31,20 @@
 
       <template #scroll>
         <!--轮播图-->
-        <home-swiper :banners="banners"/>
+        <home-swiper :banners="banners" @swiperImgLoad.once="swiperImgLoad"/>
         <!--推荐位-->
-        <recommend-view :recommends="recommends"/>
+        <recommend-view :recommends="recommends" @recommendImgLoad.once="recommendImgLoad"/>
+
         <!--周流行-->
         <feature-view/>
         <!--点击切换产品-->
         <tab-control
           :titles="['流行','新款','推荐']"
-          class="tab-control"
-          @tabClick="tabClick"/>
+          @tabClick="tabClick"
+          ref="tabControl2"
+          />
+        <!--class="tab-control"-->
+
         <!--产品瀑布-->
         <goods-list :goods="showGoods"/>
         <!--备案号-->
@@ -51,21 +65,21 @@
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendView from './childComps/RecommendView'
   import FeatureView from './childComps/FeatureView'
-
   //公共组件
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
   import BaiAnHao from 'components/common/tabbar/BaiAnHao'
-  import BackTop from 'components/content/backTop/BackTop'
-
   //方法
   import {
     getHomeMultidata,
     getHomeGoods,
   } from 'network/home'
   import {dedounce} from 'common/utils';
+  import {
+    itemImgListenerMixin,
+    backTopMixin,} from "common/mixin";
 
   export default {
     name: "home",
@@ -81,7 +95,6 @@
       GoodsList,
       Scroll,
       BaiAnHao,
-      BackTop,
     },
   data(){
       return{
@@ -94,13 +107,33 @@
           'sell':{page:0,list:[]},
         },
         currentType:'pop',
-        isShow:false,
+        tabOffsetTop:0,
+        // tabOffsetTop2:0,
+        istabFixed:false,
+        recommendImg:false,
+        saveY:0,
       }
   },
     computed:{
       showGoods(){
         return this.goods[this.currentType].list
+
+
       },
+    },
+    destroyed(){
+      console.log('销毁');
+    },
+    activated(){
+      this.$refs.scroll.scrollTo(0,this.saveY,20)
+      this.$refs.scroll.refresh()
+    },
+    deactivated(){
+      //保存离开前的位置
+      this.saveY = this.$refs.scroll.scroll.y
+
+      //取消全局事件的监听
+      this.$bus.$off('imgOk',this.itemImgListener)
     },
     created(){
       //1.请求首页的上部数据
@@ -110,21 +143,13 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
     },
+    mixins:[itemImgListenerMixin,backTopMixin,],
     mounted(){
 
-      const refresh = dedounce(this.$refs.scroll.refresh,500)
-      //3.监听item中图片加载完成
-      this.$bus.$on('imgOk', () => {
-        refresh()
-        // this.$refs.scroll.refresh()
-        // console.log('------');
-        // console.log(this.$refs.scroll.refresh());
-
-      })
     },
     methods:{
-
 
       //事件监听相关方法
       tabClick(index){
@@ -139,28 +164,38 @@
             this.currentType = 'sell'
             break
         }
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
       },
 
-      //点击返回顶部方法
-      backClick(){
-        // console.log('回顶部');
-        this.$refs.scroll.scrollTo(0,0);
-      },
 
-      //判断高度,修改isShow
+      //判断高度,修改isShow,来确定返回顶部出不出现,以及判断点击切换部分是否吸顶
       contentScroll(position){
         //这里可以打印派发事件
         // console.log(position);
 
-        this.isShow = (-position.y) > 600
+        this.contenttop(position);
+
+        // 2.决定tabControl是否吸顶（position：fixed）
+        this.istabFixed = (-position.y +36) > this.tabOffsetTop
+      },
+
+
+      // 获取tabControl的offsetTop
+      recommendImgLoad(){
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+        // console.log(this.tabOffsetTop);
+      },
+      //这个和上一段代码一样这个是监听图片完成
+      // 但是会偶尔出现recommend未加载完成就收取高度出现偏离一点位置所以使用上面那个代码
+      swiperImgLoad(){
+        // this.tabOffsetTop2 = this.$refs.tabControl2.$el.offsetTop
       },
 
       //上拉加载更多
       LoadMore(){
-        console.log('加载更多');
-
+        // console.log('加载更多');
         this.getHomeGoods(this.currentType);
-
         this.$refs.scroll.scroll.refresh()
 
       },
@@ -201,10 +236,22 @@
   right: 0;
   top: 0;
 }
-  .tab-control{
-    position: sticky;
-    top: 35px;
+  .tab-home-control{
+    position:fixed;
+    z-index: 1;
+    width: 100%;
   }
+  /*.fixed{*/
+    /*position: fixed;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*top: 35px;*/
+  /*}
+  */
+  /*.tab-control{*/
+    /*position: sticky;*/
+    /*top: 35px;*/
+  /*}*/
 
   .content{
     height: calc(100vh - 87px);

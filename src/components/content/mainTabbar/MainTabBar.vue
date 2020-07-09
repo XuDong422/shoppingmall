@@ -39,6 +39,6 @@
 
 <style scoped>
 .tab-bar{
-  z-index: 99;
+  z-index: 9;
 }
 </style>
