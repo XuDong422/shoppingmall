@@ -1,12 +1,12 @@
-import Vue from 'vue'
+  import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
 
 const Home = () => import('views/home/home.vue')
-const Category = () => import('views/category/category.vue')
+const Category = () => import('views/category/Category.vue')
 const Cart = () => import('views/cart/cart.vue')
-const Profile = () => import('views/profile/profile.vue')
+const Profile = () => import('views/profile/Profile.vue')
 const Detail = () => import('views/detail/Detail.vue')
 
 export default new Router({

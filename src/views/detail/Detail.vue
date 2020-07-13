@@ -28,6 +28,9 @@
       <back-top @click.native="backClick" v-show="isShow"/>
       <!--底部工具栏-->
       <detail-bottom-bar @addToCart="addToCart"/>
+
+      <!--弹窗-->
+      <!--<toast :mess></toast>-->
     </div>
 </template>
 
@@ -35,6 +38,7 @@
   // 公共组件
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
+  import Toast from 'components/common/toast/Toast'
 
   //子组件
   import DetailNavBer from './childConmps/DetailNavBer'
@@ -57,9 +61,23 @@
   import {
     itemImgListenerMixin,
     backTopMixin,} from "common/mixin";
+  import { mapActions } from 'vuex'
 
   export default {
     name: "Detail",
+    components: {
+      DetailNavBer,
+      DetailSwiPer,
+      DetailBaseInfo,
+      DetailShopInfo,
+      Scroll,
+      DetailGoodsInfo,
+      DetailParamInfo,
+      DetailCommentInfo,
+      GoodsList,
+      DetailBottomBar,
+      Toast,
+    },
     data(){
       return{
         iid:null,
@@ -73,20 +91,9 @@
         themeTopYs:[],
         getThemeTopY:null,
         currentIndex:0,
+        // message:'',
+        // show:false,
       }
-    },
-    components: {
-      DetailNavBer,
-      DetailSwiPer,
-      DetailBaseInfo,
-      DetailShopInfo,
-      Scroll,
-      DetailGoodsInfo,
-      DetailParamInfo,
-      DetailCommentInfo,
-      GoodsList,
-      DetailBottomBar,
-
     },
     created(){
       //1.保存iid
@@ -146,6 +153,7 @@
       this.$bus.$off('imgOk',this.itemImgListener)
     },
     methods:{
+      ...mapActions(['addCart']),
       detailImageLoad(){
         // this.$refs.scroll.refresh()
         // console.log('+++');
@@ -161,7 +169,7 @@
 
       titleClick(index){
         this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
-        console.log(this.themeTopYs);
+        // console.log(this.themeTopYs);
       },
       // 判断高度修改导航栏颜色
       contentScroll(position){
@@ -203,11 +211,25 @@
         product.desc = this.GoodsInfo.desc;
         product.price = this.GoodsInfo.nowPrice;
 
-        console.log(product);
+        // console.log(product);
 
         //将数据传进vuex的addCart
         // this.$store.commit('addCart',product)
-        this.$store.dispatch('addCart',product)
+        this.addCart(product).then(res => {
+          // this.show = true;
+          // this.message = res;
+          //
+          // setTimeout(() => {
+          //   this.show = false
+          // },2000)
+          // console.log(res);
+          console.log(this.$toast.show);
+          this.$toast.show(res,2000);
+
+        })
+        // this.$store.dispatch('addCart',product).then(res => {
+        //   console.log(res);
+        // })
 
         // console.log(this.$store.cartList);
       },
@@ -231,6 +253,7 @@
   .content{
     height: calc(100vh - 85px);
     z-index: 1;
+    overflow: hidden;
   }
   .detail-scroll{
     background-color: white;
