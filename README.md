@@ -18,7 +18,7 @@
 这份项目的最新接口链接我已删除，需要的朋友可以在学习视频的简介与置顶找的购买方法，全程只需9元。  
 如果您有最新接口可以将接口放置在(src/networt/request.js)中的baseURL处。
 
-## - 复制老师的分类和我的出现很多Bug怎么解决
+## - 复制category和profile出现很多Bug怎么解决
 首先分类页面：复制了category(分类)文件夹首先要整理import链接的路径有可能路径不同  
   在子组件里的import也需要整理，不止Category文件夹，GridView.vue也是分类需要的,  
   最重要的是分类商品的图片链接是goodsItem.img，因此在使用GoodsListItem组件循环展示时报大量的错。  
